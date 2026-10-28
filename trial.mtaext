@@ -13,3 +13,14 @@ parameters:
   # The trial marketplace offers postgresql-db plan "trial" only (no "development").
   db-service-plan: "trial"
 
+# Local runs (arm64 container on the Mac, bound to these services) log in through the same XSUAA
+# client, so allow localhost callbacks too. Trial only: this list replaces the one in mta.yaml.
+resources:
+  - name: cloud-integration-delivery-orchestrator-uaa
+    parameters:
+      config:
+        oauth2-configuration:
+          redirect-uris:
+            - "https://${app-host-prefix}.${default-domain}/**"
+            - "http://localhost:8080/**"
+            - "http://127.0.0.1:8080/**"
