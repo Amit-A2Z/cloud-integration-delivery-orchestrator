@@ -1,0 +1,15 @@
+# CE/trial landscape: BTP trial 0a93a4fbtrial, us10-001, org 0a93a4fbtrial, space dev.
+#   mbt build
+#   CF_HOME=~/.cf-trial cf deploy mta_archives/cloud-integration-delivery-orchestrator_1.0.0.mtar -e trial.mtaext
+
+_schema-version: "3.1.0"
+ID: cloud-integration-delivery-orchestrator-trial
+extends: cloud-integration-delivery-orchestrator
+
+parameters:
+  app-host-prefix: "cido-0a93a4fb"
+  # 0.0.5 = latest on 2026-10-29 (digest sha256:670d1d9d4efa...). Pinned for the demo.
+  docker-image: "ghcr.io/sap/cloud-integration-delivery-orchestrator:0.0.5"
+  # The trial marketplace offers postgresql-db plan "trial" only (no "development").
+  db-service-plan: "trial"
+
