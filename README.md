@@ -45,7 +45,7 @@ Ensure the following entitlements are assigned to your subaccount:
 | Service | Plan | Required |
 |---------|------|----------|
 | Authorization and Trust Management Service (xsuaa) | application + apiaccess | Yes |
-| PostgreSQL, Hyperscaler Option (postgresql-db) | development / standard | Yes |
+| PostgreSQL, Hyperscaler Option (postgresql-db) | development / standard (`trial` on trial accounts) | Yes |
 | Destination Service (destination) | lite | Yes |
 | Connectivity Service (connectivity) | lite | No (opt-in) |
 | Cloud Logging (cloud-logging) | standard | No (opt-in) |
@@ -116,6 +116,32 @@ The MTA archive file name follows the `version` in `mta.yaml` (currently `1.0.0`
 ## Troubleshooting
 
 <!-- Reserved for validated deployment issues. Report problems via GitHub Issues in the meantime. -->
+
+### Login fails with "redirect_uri does not match the configuration"
+
+XSUAA only accepts a login callback whose URL matches the instance's allowed redirect URIs. `mta.yaml`
+sets `oauth2-configuration.redirect-uris` to the app's own route (`https://${app-host-prefix}.${default-domain}/**`).
+If you bind an existing XSUAA instance through `service-name`, add the same entry to that instance.
+
+Seen on a BTP trial account, where the app domain is `cfapps.us10-001.hana.ondemand.com`.
+
+### Deploying on a BTP trial account
+
+The trial marketplace has no `development` plan for PostgreSQL. Set the plan in your `.mtaext`:
+
+```yaml
+parameters:
+  db-service-plan: "trial"
+```
+
+Verified on trial us10-001 with image `0.0.5`: the PostgreSQL `trial` instance took about 9 minutes to create,
+and the app started with all four mandatory services.
+
+### `cf install-plugin multiapps` fails with "bad CPU type in executable"
+
+On Apple silicon Macs without Rosetta, the CF plugin repository can serve an x86_64 build. Install the
+`osxarm64` binary from the [multiapps-cli-plugin releases](https://github.com/cloudfoundry/multiapps-cli-plugin/releases)
+and run `cf install-plugin <file>`.
 
 ## About This Project
 

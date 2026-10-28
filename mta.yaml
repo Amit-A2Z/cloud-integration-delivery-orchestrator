@@ -39,6 +39,13 @@ resources:
       service: xsuaa
       service-plan: application
       path: xs-security.json
+      # Allow the login callback on the app's own route. Without this, XSUAA rejects
+      # /login/callback on landscapes whose app domain is not covered by its default
+      # allowlist (e.g. cfapps.us10-001.hana.ondemand.com on BTP trial accounts).
+      config:
+        oauth2-configuration:
+          redirect-uris:
+            - "https://${app-host-prefix}.${default-domain}/**"
 
   - name: cloud-integration-delivery-orchestrator-uaa-api
     type: org.cloudfoundry.managed-service
