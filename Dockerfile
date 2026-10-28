@@ -10,7 +10,12 @@
 #   docker build -f Dockerfile -t cpi-delivery ../../mmt-devops-cpi-delivery
 
 # === Build stage: compile Go binary with embedded frontend ===
-FROM golang:1.25-alpine3.24 AS builder
+FROM --platform=$BUILDPLATFORM golang:1.25-alpine3.24 AS builder
+
+# Set by BuildKit from --platform (or --arch / --os). No defaults: a default here
+# wins over the value Apple container's builder passes, and pins every build to it.
+ARG TARGETOS
+ARG TARGETARCH
 
 ENV GOPROXY=https://proxy.golang.org,direct
 
@@ -19,7 +24,7 @@ COPY go.mod go.sum ./
 RUN --mount=type=cache,target=/go/pkg/mod go mod download
 
 COPY . .
-RUN --mount=type=cache,target=/go/pkg/mod CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /cpi-delivery .
+RUN --mount=type=cache,target=/go/pkg/mod CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -o /cpi-delivery .
 
 # === Runtime stage ===
 FROM alpine:3.24
