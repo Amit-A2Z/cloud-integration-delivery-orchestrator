@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+
+- **Login on landscapes outside the XSUAA default redirect allowlist:** the XSUAA resource now sets
+  `oauth2-configuration.redirect-uris` to the app's own route (`https://${app-host-prefix}.${default-domain}/**`).
+  Before, login failed with "redirect_uri does not match the configuration", for example on BTP trial
+  accounts (`cfapps.us10-001.hana.ondemand.com`).
+
+### Documentation
+
+- README Troubleshooting: the redirect URI error, the `trial` PostgreSQL plan on trial accounts, and the
+  multiapps plugin "bad CPU type" error on Apple silicon.
+
 ## [0.0.2] - 2026-09-03
 
 ### Changed
