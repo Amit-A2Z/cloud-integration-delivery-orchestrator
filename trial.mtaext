@@ -24,3 +24,32 @@ resources:
             - "https://${app-host-prefix}.${default-domain}/**"
             - "http://localhost:8080/**"
             - "http://127.0.0.1:8080/**"
+
+  # SAP Alert Notification: the trial offers plan "standard" only (mta.yaml uses "free").
+  # CIDO publishes delivery.approval.requested and delivery.status.<status> events
+  # (pkg/notify/composite.go). One condition + one EMAIL action + one subscription mail them.
+  # A new EMAIL action stays inactive until the recipient confirms the ANS confirmation mail.
+  - name: cloud-integration-delivery-orchestrator-ans
+    active: true
+    parameters:
+      service-plan: standard
+      config:
+        configuration:
+          conditions:
+            - name: cido-delivery-events
+              description: All CIDO delivery events
+              propertyKey: eventType
+              predicate: STARTS_WITH
+              propertyValue: "delivery."
+          actions:
+            - name: cido-mail-amit
+              description: Mail CIDO delivery events
+              type: EMAIL
+              state: ENABLED
+              properties:
+                destination: amit.shukla@mindsetconsulting.com
+          subscriptions:
+            - name: cido-delivery-to-mail
+              state: ENABLED
+              conditions: [cido-delivery-events]
+              actions: [cido-mail-amit]
